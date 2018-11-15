@@ -1,0 +1,101 @@
+<script src="simpletest.js"></script>
+
+<script> 
+
+function isPrototypeOf(potentialPrototype, targetObject){ 
+  // accounting for the error when the prototype obj is null or undefined
+  if (potentialPrototype === null || potentialPrototype === undefined){
+    throw new TypeError('Cannot read property "isPrototypeOf" of ' + potentialPrototype); 
+  }
+  if (!targetObject){ // e.g. if null
+    return false; 
+  }
+
+  // check if the prototype of target is equal to potential prototype 
+  prototypeOfTarget = Object.getPrototypeOf(targetObject); 
+  if (prototypeOfTarget === potentialPrototype){
+    return true; 
+  }
+  // otherwise, we'll work our way up the chain recursively until we get a match 
+  // or hit null, which will return false
+  else{ 
+    return isPrototypeOf(potentialPrototype,prototypeOfTarget); 
+  }
+}
+
+// Setting up my tests w/ variable declarations 
+
+var bird = {
+  chirp: function(){console.log('tweeet')}
+};
+
+function Cat(){
+  this.meow = function(){console.log('mrow')};
+}
+
+var myBird = Object.create(bird); 
+var babyBird = Object.create(myBird); 
+
+var myCat = new Cat(); 
+
+// Beast 5 test set up stuff
+
+var canine = {
+  bark : function(){
+    console.log('bark'); 
+  }
+}
+
+var dog = Object.create(canine); 
+dog.fetch = function(){ 
+  console.log('fetch'); 
+}
+
+var myDog = Object.create(dog); 
+var empty = Object.create(null); 
+
+tests ({
+
+  // some of these tests eq comparisons may be a bit redundant 
+  // but, wanted to quote the beast5 instructions too. 
+
+  'It should return true if the first argument is the prototype of the second.': function(){
+    eq(isPrototypeOf(bird,myBird),true); 
+    eq(isPrototypeOf(bird,myBird),bird.isPrototypeOf(myBird)); 
+    eq(isPrototypeOf(Cat.prototype,myCat),true);
+  }, 
+
+  'It should return false if the first argument does not appear in the prototype chain of the second.': function(){
+    eq(isPrototypeOf(Cat.prototype,myBird),false); 
+    eq(isPrototypeOf(bird,empty),false);  
+    eq(isPrototypeOf(bird,empty),bird.isPrototypeOf(empty)); 
+  }, 
+
+  'It should return true if the first argument is anywhere in the prototype chain, including ancestors.': function(){
+    eq(isPrototypeOf(Object.prototype,babyBird), true);
+    eq(isPrototypeOf(Object.prototype,babyBird), Object.prototype.isPrototypeOf(babyBird)); 
+  }, 
+
+  'It should throw a TypeError if potentialPrototype is null or undefined': function(){
+    var isTypeError = false; 
+    try{
+      isPrototypeOf(null,empty); 
+    }
+    catch(e){
+      isTypeError = (e instanceof TypeError); 
+    }
+    eq(isTypeError, true); 
+  }, 
+
+  // ... probably unneeded thoroughness, but here's the beast 5 instructions tests too
+
+  'Beast 5 tests' : function(){
+    eq(dog.isPrototypeOf(myDog),isPrototypeOf(dog, myDog)); 
+    eq(dog.isPrototypeOf(empty),isPrototypeOf(dog, empty)); 
+    eq(Object.prototype.isPrototypeOf(myDog),isPrototypeOf(Object.prototype, myDog)); 
+    eq(isPrototypeOf(canine, myDog),true); 
+  }
+
+})
+
+</script>
