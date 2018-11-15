@@ -7,7 +7,8 @@ function isPrototypeOf(potentialPrototype, targetObject){
   if (potentialPrototype === null || potentialPrototype === undefined){
     throw new TypeError('Cannot read property "isPrototypeOf" of ' + potentialPrototype); 
   }
-  if (!targetObject){ // e.g. if null
+  // explicitly returning false when the target is null
+  if (targetObject === null){ 
     return false; 
   }
 
