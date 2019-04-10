@@ -14,7 +14,7 @@ function isPrototypeOf(potentialPrototype, targetObject){
   }
 
   // check if the prototype of target is equal to potential prototype 
-  prototypeOfTarget = Object.getPrototypeOf(targetObject); 
+  var prototypeOfTarget = Object.getPrototypeOf(targetObject); 
   if (prototypeOfTarget === potentialPrototype){
     return true; 
   }
